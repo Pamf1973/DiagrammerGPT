@@ -1,0 +1,45 @@
+Title: 3‑Day Email Process Automation Flowchart
+
+Entities:
+- Oval: START (green)
+- Rectangles (with notes and lanes):
+  * Day 1:
+    1.1 Define Current Email Pain Points
+      - Input textbox: Overwhelming Inbox, Manual Habits
+    1.2 Identify Automation Goals
+      - Output textbox: List of Top 5‑10 Annoying Email Types
+    1.3 Research & Select Tools
+      - Output textbox: Prioritized List of Emails for Deletion/Sorting
+    1.4 Implement Initial Deletion/Trash Rules
+      - Note: (Set to move to 'Quarantine/Trash' initially, NOT permanent delete)
+      - Output textbox: Chosen Email Client Features (e.g., Gmail Filters, Outlook Rules)
+  * Day 2:
+    2.1 Set Up Primary Categorization/Sorting Rules
+      - Input textbox: Prioritized List, Chosen Tools
+      - Output textbox: Active Deletion/Trash Rules
+    2.2 Initial Monitoring & Quick Adjustments
+      - Input textbox: Automation Goals, Email Flow
+      - Output textbox: Active Sorting/Categorization Rules
+    Decision diamond: {Are emails consistently sorted/trashed correctly?}
+      - Branch Yes → flow proceeds to 3.1
+      - Branch No → flow to Adjust Rules rectangle → loop back to 2.2
+    Adjust Rules rectangle: Adjust Rules (Modify/Create new)
+  * Day 3:
+    3.1 Intensive Monitoring & Refinement
+      - Input textbox: Monitoring Observations
+      - Output textbox: Optimized Automation Ruleset
+    3.2 Review Objectives & Document
+      - Output textbox: Mini‑Project Completion Report / Lessons Learned
+- Oval: END (of 3‑Day Mini‑Project) (red)
+- Rectangle (below): POST‑3‑DAY: ONGOING MAINTENANCE
+  - Note: (Regularly review & adapt rules as email patterns change)
+
+Relationships:
+- Straight arrows connecting START → 1.1 → … → 3.2 → END
+- Decision diamond branches with Yes/No; loop as described
+- Arrow from END → POST‑3‑DAY box
+
+Layout:
+- Vertical swimlanes Day 1 / Day 2 / Day 3; Ongoing Maintenance spans full width at bottom
+- Light-blue and white color scheme
+- Arrows thin and clear; loop arrow curved
