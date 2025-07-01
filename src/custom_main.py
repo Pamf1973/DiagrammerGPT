@@ -18,6 +18,23 @@ parser.add_argument(
     default="generated_diagram_plan.json",
     help="Path to save the generated diagram plan"
 )
+parser.add_argument(
+        "--plan_file",
+        type=str,
+        default=None,
+        help="(Optional) Path to an existing plan JSON file to skip planning stage"
+)
+parser.add_argument(
+        "--output_file",
+        type=str,
+        default=None,
+        help="Path where the final diagram image will be saved (e.g., flowchart.png)"
+)
+parser.add_argument(
+        "--render",
+        action="store_true",
+        help="If provided, render the diagram image after planning"
+)
 args = parser.parse_args()
 
 save_file = f"{args.save_file}"
