@@ -6,9 +6,18 @@ from openai_handler import generate_use_all_icl
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     
-    parser.add_argument("--test_file", type=str, default="custom_prompts.json")
-    parser.add_argument("--save_file", type=str, default="generated_diagram_plans.json")
-
+    parser.add_argument(
+    "--test_file",
+    type=str,
+    default="src/my_email_workflow_prompt.txt",
+    help="Path to your custom prompt file"
+    
+parser.add_argument(
+    "--save_file",
+    type=str,
+    default="generated_diagram_plan.json",
+    help="Path to save the generated diagram plan"
+)
     args = parser.parse_args()
 
     save_file = f"{args.save_file}"
