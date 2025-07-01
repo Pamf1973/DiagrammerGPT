@@ -11,35 +11,35 @@ if __name__ == "__main__":
     type=str,
     default="src/my_email_workflow_prompt.txt",
     help="Path to your custom prompt file"
-    
+)
 parser.add_argument(
     "--save_file",
     type=str,
     default="generated_diagram_plan.json",
     help="Path to save the generated diagram plan"
 )
-    args = parser.parse_args()
+args = parser.parse_args()
 
-    save_file = f"{args.save_file}"
+save_file = f"{args.save_file}"
 
-    out = { }
+out = { }
     
-    with open(f"{args.test_file}", "r") as f:
+with open(f"{args.test_file}", "r") as f:
         data = json.load(f)
     
-    test_data = []
+test_data = []
 
-    for x in data:
+for x in data:
         test_data.append({
             "image": x["image"],
             "caption": x["caption"],
             "topic": x["topic"]
         })
 
-    with open(f"{args.test_file}", "r") as f:
+with open(f"{args.test_file}", "r") as f:
         test_images = json.load(f)
 
-    for sample in tqdm(test_data, desc="Generating Diagram Plans"):
+for sample in tqdm(test_data, desc="Generating Diagram Plans"):
         diagram, corrections, attempts = generate_use_all_icl(sample["caption"], sample["topic"])
 
         out[sample["image"]] = {
@@ -53,5 +53,5 @@ parser.add_argument(
         with open(save_file, "w") as f:
             json.dump(out, f, indent=2)
 
-    with open(save_file, "w") as f:
+with open(save_file, "w") as f:
             json.dump(out, f, indent=2)

@@ -1,31 +1,26 @@
-import openai
+import requests
 from in_ctx_prompts import prompts
 import copy
-
 from dotenv import dotenv_values
+import os
+
 config = dotenv_values(".env")
 
-openai.api_key = config['API_KEY']
-openai.api_base = config['API_BASE']
-openai.api_type = config['API_TYPE']
-openai.api_version = config['API_VERSION']
-
-def call_api(log, engine="gpt-4", use_azure=True):
-    if use_azure:
-        resp = openai.ChatCompletion.create(
-            engine=engine,
-            messages=log,
-            temperature=0
-        )
-    else:
-        resp = openai.ChatCompletion.create(
-            model=engine,
-            messages=log,
-            temperature=0
-        )
-
-    resp = resp['choices'][0]['message']['content']
-
+def call_api(log, engine="openai/gpt-3.5-turbo-0613", use_azure=False):
+    api_base = config['API_BASE'].rstrip('/')  # Remove trailing slash if present
+    url = f"{api_base}/chat/completions"
+    headers = {
+        "Authorization": f"Bearer {config['API_KEY']}",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "model": engine,
+        "messages": log,
+        "temperature": 0
+    }
+    response = requests.post(url, headers=headers, json=payload)
+    response.raise_for_status()
+    resp = response.json()['choices'][0]['message']['content']
     return resp
 
 def generate_use_all_icl(caption, topic):
@@ -38,11 +33,9 @@ def generate_use_all_icl(caption, topic):
     for key in diagram_prompt_keys:
         topic_icl = prompts[key].split("Here are some examples:")[1].split("\n")
         topic_icl = '\n'.join(topic_icl[:-2])
-
         prompt_examples += f"{topic_icl}\n"
 
     diagram_prompt = f"{prompt_preamble}{prompt_examples}\nCaption:\n{caption.lower()}\nTopic:\n{topic}\n"
-
 
     auditor_preamble = prompts[auditor_prompt_keys[0]].split("Here are some examples:")[0] + "Here are some examples:\n"
     auditor_examples = ""
@@ -50,7 +43,6 @@ def generate_use_all_icl(caption, topic):
     for key in auditor_prompt_keys:
         topic_icl = prompts[key].split("Here are some examples:")[1].split("\n")
         topic_icl = '\n'.join(topic_icl[:-2])
-
         auditor_examples += f"{topic_icl}\n"
 
     auditor_prompt = f"{auditor_preamble}{auditor_examples}\nCaption:\n{caption.lower()}\nTopic:\n{topic}"
@@ -64,38 +56,27 @@ def generate_use_all_icl(caption, topic):
     diagram_attempts = []
 
     for i in range(5):
-        diagram = call_api(diagram_chatlog, engine="gpt-4-32k")
-        
+        diagram = call_api(diagram_chatlog, engine="openai/gpt-3.5-turbo-0613", use_azure=False)
         parsed_resp = parse_diagram(diagram, caption, topic, load=parsed_resp)
         diagram_attempts.append(copy.deepcopy(parsed_resp))
-        
         if i == 4:
             continue
-
         correction_chatlog = [
             {"role": "user", "content": f"{auditor_prompt}\n{diagram}\nWhat is wrong with this diagram?\n"},
         ]
-
-        correction = call_api(correction_chatlog, engine="gpt-4-32k")
+        correction = call_api(correction_chatlog, engine="openai/gpt-3.5-turbo-0613", use_azure=False)
         corrections.append(correction)
-
         words = correction.lower().replace(".", "").split(" ")
-
         if "impossible" in words or "nothing" in words or ("correct" in words and not "not correct" in correction.lower()):
             break
-        
         correction = parse_correction(correction)
-
         diagram_chatlog.append({"role": "assistant", "content": diagram})
         diagram_chatlog.append({"role": "user", "content": correction})
-
         tokens = 0
         for x in diagram_chatlog:
             tokens += len(x["content"].split(" ")) * 1.333
-
         if tokens > 32000:
             break
-
     return parsed_resp, corrections, diagram_attempts
 
 def parse_correction(correction):
